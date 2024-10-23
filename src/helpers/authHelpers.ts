@@ -4,14 +4,16 @@ import bcrypt from "bcrypt"
 
 dotenv.config()
 
-// export const generateToken = (id: string) => {
-//     return jwt.sign({ id }, process.env.JWT_SECRET);
-// };
+const JWT_SECRET = process.env.JWT_SECRET || ""
 
-// export const decodeToken = (token: string) => {
-//     return jwt.verify(token, process.env.JWT_SECRET) as JwtPayload
-//         ;
-// };
+export const generateToken = (id: string) => {
+    return jwt.sign({ id }, JWT_SECRET);
+};
+
+export const decodeToken = (token: string) => {
+    return jwt.verify(token, JWT_SECRET) as JwtPayload
+        ;
+};
 
 export const comparePassword = async (password: string, hashedPassword: string) => {
     return await bcrypt.compare(password, hashedPassword);

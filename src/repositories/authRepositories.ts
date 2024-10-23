@@ -12,7 +12,14 @@ const saveUser = async (data: any) => {
     return user;
 }
 
+const saveSession = async (data: any) => {
+    const session = new Session(data);
+    await session.save();
+    return session;
+}
+
 export default {
     findUserByAttribute,
     saveUser,
+    saveSession
 }

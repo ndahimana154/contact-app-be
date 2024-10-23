@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import authRepositories from "../repositories/authRepositories";
-import { hashPassword } from "../helpers/authHelpers";
+import { comparePassword, generateToken, hashPassword } from "../helpers/authHelpers";
 
 const registerUser = async (req: Request, res: Response): Promise<any> => {
     try {
@@ -20,6 +20,32 @@ const registerUser = async (req: Request, res: Response): Promise<any> => {
     }
 };
 
+const loginUser = async (req: any, res: Response): Promise<any> => {
+    try {
+        const isPasswordMatching = comparePassword(req.body.password, req.user.password);
+        if (!isPasswordMatching) {
+            return res.status(httpStatus.UNAUTHORIZED).json({
+                status: httpStatus.UNAUTHORIZED,
+                message: "Invalid password"
+            });
+        }
+        const token = generateToken(req.user._id);
+        const session = await authRepositories.saveSession({ userId: req.user._id, content: token })
+        
+        return res.status(httpStatus.OK).json({
+            status: httpStatus.OK,
+            message: "User logged in successfully",
+            data: { session, token }
+        });
+    } catch (error) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            message: error instanceof Error ? error.message : "An unexpected error occurred"
+        })
+    }
+}
+
 export default {
-    registerUser
+    registerUser,
+    loginUser
 };

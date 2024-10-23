@@ -20,3 +20,22 @@ export const isUserAlreadyExists = async (req: Request, res: Response, next: Nex
         });
     }
 };
+
+export const isUserExists = async (req: any, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const user = await authRepositories.findUserByAttribute("email", req.body.email);
+        if (!user) {
+            res.status(httpStatus.NOT_FOUND).json({
+                status: httpStatus.NOT_FOUND,
+                message: "User not found"
+            });
+        }
+        req.user = user;
+        next();
+    } catch (error) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            message: error instanceof Error ? error.message : "Something went wrong"
+        })
+    }
+}
