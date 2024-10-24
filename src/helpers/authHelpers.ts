@@ -6,8 +6,8 @@ dotenv.config()
 
 const JWT_SECRET = process.env.JWT_SECRET || ""
 
-export const generateToken = (id: string) => {
-    return jwt.sign({ id }, JWT_SECRET);
+export const generateToken = (_id: string) => {
+    return jwt.sign({ _id }, JWT_SECRET);
 };
 
 export const decodeToken = (token: string) => {

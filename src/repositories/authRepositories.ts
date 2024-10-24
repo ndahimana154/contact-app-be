@@ -18,8 +18,15 @@ const saveSession = async (data: any) => {
     return session;
 }
 
+const findSessionByUserIdAndToken = async (userId: string, token: string) => {
+    return await Session.findOne({
+        userId: userId, content: token
+    })
+}
+
 export default {
     findUserByAttribute,
     saveUser,
-    saveSession
+    saveSession,
+    findSessionByUserIdAndToken
 }
