@@ -44,7 +44,43 @@ const createNewContact = async (req: any, res: Response): Promise<any> => {
         })
     }
 }
+
+const updateContact = async (req: any, res: Response): Promise<any> => {
+    try {
+        const updatedContact = await contactsRepositories.updateContact(req.params.id, req.body);
+        return res.status(httpStatus.OK).json({
+            status: httpStatus.OK,
+            message: "Contact updated successfully",
+            data: {
+                contact: updatedContact
+            }
+        })
+    } catch (error: any) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            message: error.message
+        })
+    }
+}
+
+const deleteContact = async (req: any, res: Response): Promise<any> => {
+    try {
+        await contactsRepositories.deleteContact(req.params.id);
+        return res.status(httpStatus.OK).json({
+            status: httpStatus.OK,
+            message: "Contact deleted successfully"
+        })
+    } catch (error: any) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            message: error.message
+        })
+    }
+}
+
 export default {
     getAllUsersContacts,
-    createNewContact
+    createNewContact,
+    updateContact,
+    deleteContact
 }
