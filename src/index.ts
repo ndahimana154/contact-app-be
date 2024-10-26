@@ -1,18 +1,27 @@
-import express from "express"
-import dotenv from "dotenv"
-import router from "./routes"
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import morgan from "morgan"
+import router from "./routes";
+import dbConnection from "./database/config/config";
 
-import dbConnection from "./database/config/config"
+dotenv.config();
 
-dotenv.config()
+const app = express();
 
+const corsOptions = {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+};
 
-const app = express()
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(morgan("dev"))
+app.use("/api", router);
 
-app.use(express.json())
-app.use("/api", router)
+const port = process.env.PORT || 3000;
 
-const port = process.env.PORT || 3000
+dbConnection;
 
-dbConnection
-app.listen(port, () => console.log("App listening on port " + port))
+app.listen(port, () => console.log("App listening on port " + port));

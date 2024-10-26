@@ -22,28 +22,41 @@ const registerUser = async (req: Request, res: Response): Promise<any> => {
 
 const loginUser = async (req: any, res: Response): Promise<any> => {
     try {
-        const isPasswordMatching = comparePassword(req.body.password, req.user.password);
+        if (!req.user) {
+            return res.status(httpStatus.UNAUTHORIZED).json({
+                status: httpStatus.UNAUTHORIZED,
+                message: "User not found",
+            });
+        }
+
+        const isPasswordMatching = await comparePassword(req.body.password, req.user.password);
+
         if (!isPasswordMatching) {
             return res.status(httpStatus.UNAUTHORIZED).json({
                 status: httpStatus.UNAUTHORIZED,
-                message: "Invalid password"
+                message: "Invalid password",
             });
         }
+
         const token = generateToken(req.user._id);
-        const session = await authRepositories.saveSession({ userId: req.user._id, content: token })
-        
+        const session = await authRepositories.saveSession({ userId: req.user._id, content: token });
+
         return res.status(httpStatus.OK).json({
             status: httpStatus.OK,
             message: "User logged in successfully",
-            data: { session, token }
+            data: { session, token },
         });
+
     } catch (error) {
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
-            status: httpStatus.INTERNAL_SERVER_ERROR,
-            message: error instanceof Error ? error.message : "An unexpected error occurred"
-        })
+        if (!res.headersSent) {
+            return res.status(httpStatus.UNAUTHORIZED).json({
+                status: httpStatus.UNAUTHORIZED,
+                message: error instanceof Error ? error.message : "An unexpected error occurred",
+            });
+        }
+        console.error("Error occurred after response was sent:", error);    
     }
-}
+};
 
 export default {
     registerUser,
